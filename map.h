@@ -3,6 +3,7 @@
 #define SD3_MAP_H
 
 class map {
+public:
 	virtual void insert(int key, int value) = 0;
 	virtual int remove(int key) = 0;
 	virtual void display() = 0;
