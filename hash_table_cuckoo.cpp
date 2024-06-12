@@ -1,24 +1,24 @@
 #include "hash_table_cuckoo.h"
 
-// Funkcja haszuj¹ca 1
-int HashTableCuckoo::hash1(int key)
+// Funkcja haszujÄ…ca 1
+int hash_table_cuckoo::hash1(int key)
 {
     return key % capacity;
 }
 
-// Funkcja haszuj¹ca 2
-int HashTableCuckoo::hash2(int key)
+// Funkcja haszujÄ…ca 2
+int hash_table_cuckoo::hash2(int key)
 {
     return 1 + (key % (capacity - 1));
 }
 
 // Zmiana pojemnosci tablicy
-void HashTableCuckoo::rehash(int newCapacity)
+void hash_table_cuckoo::rehash(int newCapacity)
 {
 	// Dotychczasowe tablice i pojemnosc
-	int* oldTable1 = table1;
-	int* oldTable2 = table2;
-	int oldCapacity = capacity;
+	int* old_table1 = table1;
+	int* old_table2 = table2;
+	int old_capacity = capacity;
 
 	// Nowe tablice
 	size = 0;
@@ -31,24 +31,24 @@ void HashTableCuckoo::rehash(int newCapacity)
 		table2[i] = -1;
 
 	}
-	// Przenoszenie elementów ze starych tablic do nowych
-	for (int i = 0; i < oldCapacity; i++)
+	// Przenoszenie elementÃ³w ze starych tablic do nowych
+	for (int i = 0; i < old_capacity; i++)
 	{
-		if (oldTable1[i] != -1)
+		if (old_table1[i] != -1)
 		{
-			insert(i, oldTable1[i]);
+			insert(i, old_table1[i]);
 		}
-		if (oldTable2[i] != -1)
+		if (old_table2[i] != -1)
 		{
-			insert(i, oldTable2[i]);
+			insert(i, old_table2[i]);
 		}
 	}
-	delete[] oldTable1;
-	delete[] oldTable2;
+	delete[] old_table1;
+	delete[] old_table2;
 }
 
 // Konstruktor
-HashTableCuckoo::HashTableCuckoo(int capacity)
+hash_table_cuckoo::hash_table_cuckoo(int capacity)
 {
 	this->capacity = capacity;
 	this->size = 0;
@@ -63,7 +63,7 @@ HashTableCuckoo::HashTableCuckoo(int capacity)
 }
 
 // Destruktor
-HashTableCuckoo::~HashTableCuckoo()
+hash_table_cuckoo::~hash_table_cuckoo()
 {
 	delete[] table1;
 	delete[] table2;
@@ -72,100 +72,95 @@ HashTableCuckoo::~HashTableCuckoo()
 }
 
 // Wstawienie elementu
-void HashTableCuckoo::insert(int key, int value)
+void hash_table_cuckoo::insert(int key, int value)
 {
 	int index = hash1(key);
-	int* currentTable = table1;
+	int* current_table = table1;
 
-	// próbuje wstawiæ element do ktorejs tablicy
+	// prÃ³buje wstawiÄ‡ element do ktorejs tablicy
 	for (int i = 0; i < 10; i++) {
-		if (currentTable[index] == -1) {
-			currentTable[index] = value;
+		if (current_table[index] == -1) {
+			current_table[index] = value;
 			size++;
 			return;
 		}
 
-		// Zamiana wartoœci i przesuniêcie
-		std::swap(currentTable[index], value);
+		// Zamiana wartoÅ›ci i przesuniÄ™cie
+		std::swap(current_table[index], value);
 
-		// Prze³¹cza tablice i oblicza nowy indeks
-		if (currentTable == table1) {
-			currentTable = table2;
+		// PrzeÅ‚Ä…cza tablice i oblicza nowy indeks
+		if (current_table == table1) {
+			current_table = table2;
 			index = (index + hash2(key)) % capacity;
 		}
 		else {
-			currentTable = table1;
+			current_table = table1;
 			index = hash1(key);
 		}
 	}
 
-	// Jeœli nie uda siê znalezc wolnego miejsca, zmienia rozmiar i ponawia próbê
+	// JeÅ›li nie uda siÄ™ znalezc wolnego miejsca, zmienia rozmiar i ponawia prÃ³bÄ™
 	rehash(capacity * 2);
 	insert(key, value);
 }
 
 // Usuwanie elementu
-int HashTableCuckoo::remove(int key)
+int hash_table_cuckoo::remove(int key)
 {
-	int index = hash1(key);
-	int* currentTable = table1;
+	int index1 = hash1(key);
+	int index2 = hash2(key);
 
-	// Przeszukuje obie tablicy w poszukiwaniu klucza
-	for (int i = 0; i < 10; i++) {
-		if (currentTable[index] != -1) {
-			currentTable[index] = -1;
-			size--;
-			return;
-		}
-
-		// Prze³¹cza tablice i oblicza nowy indeks
-		if (currentTable == table1) {
-			currentTable = table2;
-			index = (index + hash2(key)) % capacity;
-		}
-		else {
-			currentTable = table1;
-			index = (index + hash1(key)) % capacity;
-		}
+	// SprawdÅº pierwszy indeks w table1
+	if (table1[index1] == key) {
+		table1[index1] = -1; // lub inna wartoÅ›Ä‡ oznaczajÄ…ca pustÄ… komÃ³rkÄ™
+		size--;
 	}
-
-	// Jesli liczba elementów jest zbyt ma³a, zmniejsza rozmiar tablicy
-	if (size <= capacity * 0.3) {
-		rehash(capacity / 2);
-		remove(key);
+	// SprawdÅº drugi indeks w table2
+	else if (table2[index2] == key) {
+		table2[index2] = -1; // lub inna wartoÅ›Ä‡ oznaczajÄ…ca pustÄ… komÃ³rkÄ™
+		size--;
 	}
 	else {
-		cout << "Key not found" << endl;
+		//cout << "Key not found" << endl;
+		return -1;
 	}
+
+	// JeÅ›li liczba elementÃ³w jest zbyt maÅ‚a, zmniejsza rozmiar tablicy
+	if (size <= capacity * 0.3) {
+		rehash(capacity / 2);
+	}
+
+	return 0;
 }
 
-// Wyszukanie wartoœci na podstawie klucza
-int HashTableCuckoo::find(int key)
+
+// Wyszukanie wartoÅ›ci na podstawie klucza
+int hash_table_cuckoo::find(int key)
 {
 	int index = hash1(key);
-	int* currentTable = table1;
+	int* current_table = table1;
 
 	// Przeszukuje obie tablicy w poszukiwaniu klucza
 	for (int i = 0; i < 10; i++) {
-		if (currentTable[index] != -1) {
+		if (current_table[index] != -1) {
 			return 0;
 		}
 
-		// Prze³¹cza tablice i oblicza nowy indeks
-		if (currentTable == table1) {
-			currentTable = table2;
+		// PrzeÅ‚Ä…cza tablice i oblicza nowy indeks
+		if (current_table == table1) {
+			current_table = table2;
 			index = hash2(key);
 		}
 		else {
-			currentTable = table1;
+			current_table = table1;
 			index = hash1(key);
 		}
 	}
 	return -1;
 }
 
-// Wyœwietlenie zawartosci tablic
-void HashTableCuckoo::display()
+// WyÅ›wietlenie zawartosci tablic
+void hash_table_cuckoo::display()
 {
 	cout << "Table 1: ";
 	for (int i = 0; i < capacity; i++)
