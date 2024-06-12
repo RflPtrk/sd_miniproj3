@@ -1,33 +1,33 @@
 #include "hash_table_chaining.h"
 
-// Zmiana rozmiaru tablicy mieszajπcej
+// Zmiana rozmiaru tablicy mieszajƒÖcej
 void hash_table_chaining::resize(size_t newCapacity)
 {
-	// Nowa tablicy o nowej pojemnoúci
+	// Nowa tablicy o nowej pojemno≈õci
 	NodeHT** newTable = new NodeHT * [newCapacity];
 	// Wypelnienie nowej tablicy nullami
 	for (size_t i = 0; i < newCapacity; i++) {
-		newTable[i] = NULL;
+		newTable[i] = nullptr;
 	}
-	// Przeniesienie elementÛw starej tablicy do nowej
+	// Przeniesienie element√≥w starej tablicy do nowej
 	for (size_t i = 0; i < capacity; i++) {
 		NodeHT* current = table[i];
 		while (current != nullptr) {
-			NodeHT* next = current->next; // Wskaünik do nastÍpnego elementu
+			NodeHT* next = current->next; // Wska≈∫nik do nastƒôpnego elementu
 			int index = current->key % newCapacity; // Nowy indeks dla elementu w nowej tablicy
-			if (newTable[index] == NULL) {
-				newTable[index] = table[i];
+			if (newTable[index] == nullptr) {
+				newTable[index] = current;
 				current->next = nullptr;
 			}
 			else {
-				NodeHT* temp = table[index];
+				NodeHT* temp = newTable[index];
 				while (temp->next != nullptr) {
 					temp = temp->next;
 				}
-				temp->next = newTable[i];
+				temp->next = current;
 				current->next = nullptr;
 			}
-			current = next; // Przejúcie do nastÍpnego elementu
+			current = next; // Przej≈õcie do nastƒôpnego elementu
 		}
 	}
 	delete[] table;
@@ -35,7 +35,7 @@ void hash_table_chaining::resize(size_t newCapacity)
 	capacity = newCapacity;
 }
 
-// Konstruktor inicjalizujπcy tablicÍ mieszajπcπ o podanej pojemnoúci
+// Konstruktor inicjalizujƒÖcy tablicƒô mieszajƒÖcƒÖ o podanej pojemno≈õci
 hash_table_chaining::hash_table_chaining(int capacity)
 {
 	this->capacity = capacity;
@@ -46,7 +46,7 @@ hash_table_chaining::hash_table_chaining(int capacity)
 	size = 0;
 }
 
-// Destruktor usuwajπcy wszystkie elementy z tablicy mieszajπcej
+// Destruktor usuwajƒÖcy wszystkie elementy z tablicy mieszajƒÖcej
 hash_table_chaining::~hash_table_chaining()
 {
 	NodeHT* current = table[0];
@@ -61,13 +61,13 @@ hash_table_chaining::~hash_table_chaining()
 	capacity = 0;
 }
 
-// Funkcja haszujπca
+// Funkcja haszujƒÖca
 int hash_table_chaining::hash(int key)
 {
 	return key % capacity;
 }
 
-// Wstawienie nowej pary klucz-wartoúÊ do tablicy mieszajπcej
+// Wstawienie nowej pary klucz-warto≈õƒá do tablicy mieszajƒÖcej
 void hash_table_chaining::insert(int key, int value)
 {
 	int index = hash(key);
@@ -75,11 +75,11 @@ void hash_table_chaining::insert(int key, int value)
 	newNodeHT->key = key;
 	newNodeHT->value = value;
 	newNodeHT->next = nullptr;
-	// Jeúli miejsce jest puste, przypisz do niego nowy wÍze≥
+	// Je≈õli miejsce jest puste, przypisz do niego nowy wƒôze≈Ç
 	if (table[index] == NULL) {
 		table[index] = newNodeHT;
 	}
-	else { // Jeúli miejsce nie jest puste, dodaj nowy wÍze≥ na koÒcu listy
+	else { // Je≈õli miejsce nie jest puste, dodaj nowy wƒôze≈Ç na ko≈Ñcu listy
 		NodeHT* current = table[index];
 		while (current->next != nullptr) {
 			current = current->next;
@@ -88,21 +88,21 @@ void hash_table_chaining::insert(int key, int value)
 	}
 	size++;
 
-	// Jeúli liczba elementÛw przekracza pojemnoúÊ, podwÛj pojemnoúÊ
+	// Je≈õli liczba element√≥w przekracza pojemno≈õƒá, podw√≥j pojemno≈õƒá
 	if (size >= capacity) {
 		resize(capacity * 2);
 	}
 }
 
-// Wyszukanie wartoúci na podstawie klucza
+// Wyszukanie warto≈õci na podstawie klucza
 int hash_table_chaining::find(int key)
 {
 	int index = hash(key);
-	// Jeúli tablica jest pusta, zakoÒcz metode
+	// Je≈õli tablica jest pusta, zako≈Ñcz metode
 	if (table[index] == NULL) {
 		return -1;
 	}
-	else { // Jeúli tablica nie jest pusta, sprawdü czy klucz siÍ zgadza
+	else { // Je≈õli tablica nie jest pusta, sprawd≈∫ czy klucz siƒô zgadza
 		NodeHT* current = table[index];
 		while (current != nullptr) {
 			if (current->key == key)
@@ -113,28 +113,28 @@ int hash_table_chaining::find(int key)
 	return -1;
 }
 
-// Usuwanie elementu na podstawie klucza i zwrot jego wartoúci
+// Usuwanie elementu na podstawie klucza i zwrot jego warto≈õci
 int hash_table_chaining::remove(int key)
 {
 	int index = hash(key);
-	// Jeúli tablica jest pusta, zakoÒcz metode
+	// Je≈õli tablica jest pusta, zako≈Ñcz metode
 	if (table[index] == NULL) {
 		return -1;
 	}
-	// Jeúli tablica nie jest pusta, sprawdü klucz
+	// Je≈õli tablica nie jest pusta, sprawd≈∫ klucz
 	else {
 		NodeHT* current = table[index];
 		NodeHT* prev = nullptr;
 		while (current != nullptr) {
 			if (current->key == key) {
 				int value = current->value;
-				if (prev == nullptr) // Jesli to pierwszy wezel w ≥aÒcuchu
+				if (prev == nullptr) // Jesli to pierwszy wezel w ≈Ça≈Ñcuchu
 					table[index] = current->next;
 				else
 					prev->next = current->next;
 				delete current;
 				size--;
-				// Jeúli iloúÊ elementÛw spadnie do 1/4 pojemnoúci, pomniejsz pojemnoúc
+				// Je≈õli ilo≈õƒá element√≥w spadnie do 1/4 pojemno≈õci, pomniejsz pojemno≈õc
 				if (size == capacity / 4 && capacity > 1)
 					resize(capacity / 2);
 				return value;
@@ -146,7 +146,7 @@ int hash_table_chaining::remove(int key)
 	return -1;
 }
 
-// Wyúwietlenie zawartoúci tablicy
+// Wy≈õwietlenie zawarto≈õci tablicy
 void hash_table_chaining::display()
 {
 	for (size_t i = 0; i < capacity; i++) {
