@@ -14,7 +14,7 @@ void hash_table_linear::resize(size_t new_capacity)
 	for (size_t i = 0; i < capacity; i++) {
 		table[i] = -1;
 	}
-	// Przeniesienie elementÛw do nowej tablicy
+	// Przeniesienie element√≥w do nowej tablicy
 	for (size_t i = 0; i < old_capacity; i++) {
 		if (old_table[i] != -1) {
 			insert(i, old_table[i]);
@@ -23,7 +23,7 @@ void hash_table_linear::resize(size_t new_capacity)
 	delete[] old_table;
 }
 
-// Konstruktor inicjalizujπcy tablicÍ mieszajπcπ o podanej pojemnoúci
+// Konstruktor inicjalizujƒÖcy tablicƒô mieszajƒÖcƒÖ o podanej pojemno≈õci
 hash_table_linear::hash_table_linear(size_t capacity)
 {
 	this->capacity = capacity;
@@ -48,28 +48,28 @@ int hash_table_linear::hash(int key)
 	return key % capacity;
 }
 
-// Wstawienie nowej pary klucz-wartoúÊ do tablicy mieszajπcej
+// Wstawienie nowej pary klucz-warto≈õƒá do tablicy mieszajƒÖcej
 void hash_table_linear::insert(int key, int value)
 {
 	int index = hash(key);
-	// Liniowe prÛbkowanie w celu znalezienia wolnego miejsca
+	// Liniowe pr√≥bkowanie w celu znalezienia wolnego miejsca
 	while (table[index] != -1) {
 		index = (index + 1) % capacity;
 	}
 	table[index] = value;
 	size++;
-	// Jeúli liczba elementÛw przekracza pojemnoúÊ, podwÛj pojemnoúÊ
+	// Je≈õli liczba element√≥w przekracza pojemno≈õƒá, podw√≥j pojemno≈õƒá
 	if (size >= capacity) {
 		resize(capacity * 2);
 	}
 }
 
-// Wyszukanie wartoúci na podstawie klucza
+// Wyszukanie warto≈õci na podstawie klucza
 int hash_table_linear::find(int key)
 {
 	int index = hash(key);
 	int startIndex = index;
-	// Liniowe prÛbkowanie w celu znalezienia klucza
+	// Liniowe pr√≥bkowanie w celu znalezienia klucza
 	do {
 		if (index == key) {
 			return table[index];
@@ -79,17 +79,17 @@ int hash_table_linear::find(int key)
 	return -1;
 }
 
-// Usuwanie elementu na podstawie klucza i zwrot jego wartoúci
+// Usuwanie elementu na podstawie klucza i zwrot jego warto≈õci
 int hash_table_linear::remove(int key)
 {
 	int index = hash(key);
-	// Liniowe prÛbkowanie w celu znalezienia klucza
+	// Liniowe pr√≥bkowanie w celu znalezienia klucza
 	while (table[index] != -1) {
 		if (index == key) {
 			int value = table[index];
-			table[index] = -1; // Ustawienie usuniÍtego miejsca na -1
+			table[index] = -1; // Ustawienie usuniƒôtego miejsca na -1
 			size--;
-			// Jeúli iloúÊ elementÛw spadnie do 1/4 pojemnoúci, pomniejsz pojemnoúc
+			// Je≈õli ilo≈õƒá element√≥w spadnie do 1/4 pojemno≈õci, pomniejsz pojemno≈õc
 			if (size == capacity / 4)
 				resize(capacity / 2);
 			return value;
@@ -99,7 +99,7 @@ int hash_table_linear::remove(int key)
 	return -1;
 }
 
-// Wyúwietlenie zawartoúci tablicy
+// Wy≈õwietlenie zawarto≈õci tablicy
 void hash_table_linear::display()
 {
 	for (size_t i = 0; i < capacity; i++) {
